@@ -7,10 +7,6 @@ const mongoose = require("mongoose");
 
 const config = require("./config")
 
-//graphql types
-const typeDefs = require("./src/api/graphql/schema/schema")
-const resolvers = require("./src/api/graphql/resolvers/index")
-
 const app = express();
 
 //middleware
