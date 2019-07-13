@@ -25,13 +25,12 @@ const getAllImages = async (req, res, next) => {
   }
 };
 
-//PROTECTED 
 const uploadImage = async (req, res, next) => {
-  if (!req.authenticated) {
-    res.status(401).json({
-      message: "Unauthenticated"
-    });
-  }
+  // if (!req.authenticated) {
+  //   res.status(401).json({
+  //     message: "Unauthenticated"
+  //   });
+  // }
   console.log(req.file);
   const image = Image({
     _id: new mongoose.Types.ObjectId(),
@@ -61,4 +60,72 @@ const uploadImage = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllImages, uploadImage };
+const getSingleImage = async (req, res, next) => {
+  const id = req.params.imageId;
+  try {
+    const image = await Image.findById(id).select("title price _id image");
+    if (image._doc) {
+      res.status(200).json(image._doc);
+    } else {
+      res.status(404).json({
+        message: "Invalid image id"
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+    throw new Error("Error");
+  }
+};
+
+const editSingleImage = async (req, res, next) => {
+  if (!req.authenticated) {
+    res.status(401).json({
+      message: "Unauthenticated"
+    });
+  }
+  try {
+    const updateFields = {};
+    for (const field of req.body) {
+      updateFields[field.property] = field.value;
+    }
+    await Image.update(
+      {
+        _id: req.params.imageId
+      },
+      { $set: updateFields }
+    );
+
+    res.status(200).json({
+      message: "Image updated successfully!"
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+};
+
+const deleteSingleImage = async (req, res, next) => {
+  if (!req.authenticated) {
+    res.status(401).json({
+      message: "Unauthenticated"
+    });
+  }
+
+  try {
+    await Image.deleteOne({ _id: req.params.imageId });
+    res.status(200).json({
+      message: "Image deleted successfully!"
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+}
+
+module.exports = { getAllImages, uploadImage, getSingleImage, editSingleImage, deleteSingleImage };
