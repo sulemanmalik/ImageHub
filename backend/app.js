@@ -16,6 +16,12 @@ const app = express();
 //middleware
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+    res.status(200).json({
+        message: "it works"
+    })
+})
+
 
 
 mongoURI = `mongodb+srv://${config.development.database.user}:${
