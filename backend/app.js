@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 const api = require("./src/api/routes/api");
 app.use("/images", api.imageRoutes);
 app.use("/orders", api.orderRoutes);
+app.use("/user", api.userRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("Invalid request!");
