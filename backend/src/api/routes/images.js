@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const multer = require("multer");
+const auth = require("../../middleware/auth");
+
 //storage
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
@@ -55,8 +57,13 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-//POST a new image to the server
-router.post("/", upload.single("imageURL"), async (req, res, next) => {
+//POST a new image to the server - protected
+router.post("/", upload.single("imageURL"), auth, async (req, res, next) => {
+  if (!req.authenticated) {
+    res.status(401).json({
+      message: "Unauthenticated"
+    });
+  }
   console.log(req.file);
   const image = Image({
     _id: new mongoose.Types.ObjectId(),
@@ -106,8 +113,13 @@ router.get("/:imageId", async (req, res, next) => {
   }
 });
 
-//PATCH the properties of an image by its id
-router.patch("/:imageId", async (req, res, next) => {
+//PATCH the properties of an image by its id - protected
+router.patch("/:imageId", auth, async (req, res, next) => {
+  if (!req.authenticated) {
+    res.status(401).json({
+      message: "Unauthenticated"
+    });
+  }
   try {
     const updateFields = {};
     for (const field of req.body) {
@@ -131,8 +143,14 @@ router.patch("/:imageId", async (req, res, next) => {
   }
 });
 
-//DELETE an image by its id
-router.delete("/:imageId", async (req, res, next) => {
+//DELETE an image by its id - protected
+router.delete("/:imageId", auth, async (req, res, next) => {
+  if (!req.authenticated) {
+    res.status(401).json({
+      message: "Unauthenticated"
+    });
+  }
+
   try {
     await Image.deleteOne({ _id: req.params.imageId });
     res.status(200).json({
