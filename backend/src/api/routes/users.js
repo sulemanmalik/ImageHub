@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const auth = require("../../middleware/auth")
 
 const User = require("../../models/User");
 //POST - create new user
@@ -70,6 +71,14 @@ router.post("/login", async (req, res, next) => {
     });
   }
 });
+
+router.post("/logout", auth, async (req, res, next) => {
+    try {
+        
+    } catch(err) {
+
+    }
+})
 
 //DELETE - remove a user
 router.delete("/:userId", async (req, res, next) => {
