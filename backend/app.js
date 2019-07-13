@@ -9,6 +9,7 @@ const morgan = require("morgan");
 const app = express();
 
 app.use(morgan("dev"));
+app.use('/uploads', express.static('uploads')) //makes uploads folder available to public
 
 //Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option
 app.use(bodyParser.json());

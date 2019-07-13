@@ -10,6 +10,10 @@ const imageSchema = new Schema({
   price: {
     type: Number,
     required: true
+  },
+  imageURL: {
+      type: String,
+      required: true
   }
 });
 

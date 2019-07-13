@@ -1,6 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const multer = require("multer");
+//storage
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "./uploads/");
+  },
+  filename: (req, file, callback) => {
+    callback(null, file.originalname);
+  }
+});
+
+//filter image types
+const imageFilter = (req, file, callback) => {
+  if (file.mimetype === "image/png" || file.mimetype === "image/jpeg") {
+    callback(null, true);
+  } else {
+    callback(null, false);
+  }
+};
+//specifies a folcder where images are uploaded (can add limits for file size)
+const upload = multer({
+  storage: storage,
+  limits: {},
+  filter: imageFilter
+});
 
 //mongoose models
 const Image = require("../../models/Image");
@@ -8,20 +33,17 @@ const Image = require("../../models/Image");
 //GET all images
 router.get("/", async (req, res, next) => {
   try {
-    const images = await Image.find().select('title price _id');
-    const response = {  
-        images: images.map(i => {
-            return {
-                ...i._doc,
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/' + i.id
-                }
-            }
-        }),
-        count: images.length,
-
-    }
+    const images = await Image.find().select("title price _id imageURL");
+    const response = {
+      images: images.map(img => {
+        return {
+          ...img._doc,
+          imageURL: img.imageURL
+        };
+      }),
+      count: images.length
+    };
+    console.log(response);
     if (response) {
       res.status(200).json(response);
     }
@@ -34,11 +56,13 @@ router.get("/", async (req, res, next) => {
 });
 
 //POST a new image to the server
-router.post("/", async (req, res, next) => {
+router.post("/", upload.single("imageURL"), async (req, res, next) => {
+  console.log(req.file);
   const image = Image({
     _id: new mongoose.Types.ObjectId(),
     title: req.body.title,
-    price: req.body.price
+    price: req.body.price,
+    imageURL: req.file.path
   });
 
   try {
@@ -47,12 +71,11 @@ router.post("/", async (req, res, next) => {
     res.status(201).json({
       messsage: "Image uploaded successfully!",
       createdImage: {
-          ...image._doc,
-          request: {
-            type: 'GET',
-            url: 'http://localhost:3000/' + result.id
+        ...image._doc,
+        request: {
+          type: "GET",
+          url: "http://localhost:3000/" + result.id
         }
-
       }
     });
   } catch (err) {
@@ -67,7 +90,7 @@ router.post("/", async (req, res, next) => {
 router.get("/:imageId", async (req, res, next) => {
   const id = req.params.imageId;
   try {
-    const image = await Image.findById(id);
+    const image = await Image.findById(id).select("title price _id image");
     if (image._doc) {
       res.status(200).json(image._doc);
     } else {
@@ -94,11 +117,11 @@ router.patch("/:imageId", async (req, res, next) => {
       {
         _id: req.params.imageId
       },
-      { $set: updateFields}
-    )
+      { $set: updateFields }
+    );
 
     res.status(200).json({
-        message: "Image updated successfully!"
+      message: "Image updated successfully!"
     });
   } catch (err) {
     console.log(err);
@@ -113,7 +136,7 @@ router.delete("/:imageId", async (req, res, next) => {
   try {
     await Image.deleteOne({ _id: req.params.imageId });
     res.status(200).json({
-        message: "Image deleted successfully!"
+      message: "Image deleted successfully!"
     });
   } catch (err) {
     console.log(err);
