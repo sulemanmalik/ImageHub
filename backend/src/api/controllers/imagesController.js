@@ -80,15 +80,28 @@ const getSingleImage = async (req, res, next) => {
 };
 
 const editSingleImage = async (req, res, next) => {
-  if (!req.authenticated) {
-    res.status(401).json({
-      message: "Unauthenticated"
-    });
-  }
+  // if (!req.authenticated) {
+  //   res.status(401).json({
+  //     message: "Unauthenticated"
+  //   });
+  // }
   try {
+    const imageToEdit = await Image.findById(req.params.imageId).select("title price _id image");
+
     const updateFields = {};
     for (const field of req.body) {
       updateFields[field.property] = field.value;
+    }
+
+    if(updateFields.discount) {
+      console.log(updateFields.discount)
+      console.log(imageToEdit.price)
+
+      const discount = 1 - Number(updateFields.discount) * 0.01
+      const newPrice = imageToEdit.price * discount
+      console.log(newPrice)
+      updateFields.price = newPrice
+
     }
     await Image.update(
       {
@@ -107,6 +120,30 @@ const editSingleImage = async (req, res, next) => {
     });
   }
 };
+
+const applyDiscount = async (req, res, next) => {
+  try {
+    const updateFields = {};
+    for (const field of req.body) {
+      updateFields[field.property] = field.value;
+    }
+    await Image.update(
+      {
+        _id: req.params.imageId
+      },
+      { $set: updateFields }
+    );
+
+    res.status(200).json({
+      message: "Discount applied successfully!"
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+}
 
 const deleteSingleImage = async (req, res, next) => {
   if (!req.authenticated) {
@@ -128,4 +165,4 @@ const deleteSingleImage = async (req, res, next) => {
   }
 }
 
-module.exports = { getAllImages, uploadImage, getSingleImage, editSingleImage, deleteSingleImage };
+module.exports = { getAllImages, uploadImage, getSingleImage, editSingleImage, deleteSingleImage, applyDiscount };

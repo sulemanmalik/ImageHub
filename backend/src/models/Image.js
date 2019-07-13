@@ -14,6 +14,10 @@ const imageSchema = new Schema({
   imageURL: {
       type: String,
       required: true
+  },
+  discount: {
+    type: Number,
+    required: false
   }
 });
 

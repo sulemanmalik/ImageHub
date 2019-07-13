@@ -16,6 +16,8 @@ router.get("/:imageId", ImagesController.getSingleImage);
 
 router.patch("/:imageId", auth, ImagesController.editSingleImage);
 
+// router.patch("/:imageId", ImagesController.applyDiscount);
+
 router.delete("/:imageId", auth, ImagesController.deleteSingleImage);
 
 module.exports = router;
