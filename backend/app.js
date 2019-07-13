@@ -22,6 +22,7 @@ app.use((req, res, next) => {
     if (req.method === "OPTIONS") {
       return res.sendStatus(200).json();
     }
+    next()
   });
   app.use(cors())
 
@@ -56,18 +57,11 @@ mongoURI = `mongodb+srv://${config.development.database.user}:${
   config.development.database.db
 }?retryWrites=true&w=majority`;
 
-const port = 4000;
+mongoose.connect(mongoURI, { useNewUrlParser: true })
 
-//   mongoose
-//     .connect(mongoURI, { useNewUrlParser: true })
-//     .then(
-//         graphQLServer.start(() =>
-//         console.log(
-//           chalk.green.bold.inverse("SUCCESS") +
-//             ` - Running a GraphQL API server at localhost:${port}`
-//         )
-//       )
-//     )
-//     .catch(err => console.log(chalk.red.bold.inverse("ERROR"), err));
+// var db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+// .then(console.log(9)).catch(err => console.log(chalk.red.bold.inverse("ERROR"), err));
+
 
 module.exports = app;
