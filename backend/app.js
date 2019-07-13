@@ -13,13 +13,10 @@ const resolvers = require("./src/api/graphql/resolvers/index")
 
 const app = express();
 
+//middleware
 app.use(bodyParser.json());
 
-const server = new GraphQLServer({
-    typeDefs,
-    resolvers
-})
-//cKEdIkGRdZeeI0QT  mongo pw
+
 
 mongoURI = `mongodb+srv://${config.development.database.user}:${
     config.development.database.password
@@ -29,16 +26,16 @@ mongoURI = `mongodb+srv://${config.development.database.user}:${
 
   const port = 4000;
 
-  mongoose
-    .connect(mongoURI, { useNewUrlParser: true })
-    .then(
-      server.start(() =>
-        console.log(
-          chalk.green.bold.inverse("SUCCESS") +
-            ` - Running a GraphQL API server at localhost:${port}`
-        )
-      )
-    )
-    .catch(err => console.log(chalk.red.bold.inverse("ERROR"), err));
+//   mongoose
+//     .connect(mongoURI, { useNewUrlParser: true })
+//     .then(
+//         graphQLServer.start(() =>
+//         console.log(
+//           chalk.green.bold.inverse("SUCCESS") +
+//             ` - Running a GraphQL API server at localhost:${port}`
+//         )
+//       )
+//     )
+//     .catch(err => console.log(chalk.red.bold.inverse("ERROR"), err));
 
-app.listen(3000)
+module.exports = app
