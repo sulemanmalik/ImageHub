@@ -9,13 +9,24 @@ const morgan = require("morgan");
 const app = express();
 
 app.use(morgan("dev"));
+
 //Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const api = require("./src/api/routes/api");
+//cors
+app.use((req, res, next) => {
+    res.setHeader("Access-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, PATCH, DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200).json();
+    }
+  });
+  app.use(cors())
 
-//middleware
+
+const api = require("./src/api/routes/api");
 app.use("/images", api.imageRoutes);
 app.use("/orders", api.orderRoutes);
 
