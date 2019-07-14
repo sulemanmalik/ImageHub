@@ -1,8 +1,7 @@
 const Image = require("../../models/Image");
-const User = require("../../models/User");
+
 const mongoose = require("mongoose");
 
-const Helpers = require('../../helpers/drill')
 
 const getAllImages = async (req, res, next) => {
   try {

@@ -9,6 +9,8 @@ import Orders from "./components/Orders";
 import Images from "./components/Images";
 import Home from "./components/Home";
 import Login from "./components/authentication/Login";
+import {Elements, StripeProvider} from 'react-stripe-elements';
+import CheckoutForm from "./components/CheckoutForm"
 
 const App = () => {
   const [token, setToken] = useState("");
@@ -35,6 +37,14 @@ const App = () => {
         }}
       />
       <Navigation />
+      <StripeProvider apiKey="pk_test_sNR6OGP5IbwavF8eNmHtR5Br00x4dUNd2I">
+        <div className="example">
+          <h1>React Stripe Elements Example</h1>
+          <Elements>
+            <CheckoutForm />
+          </Elements>
+        </div>
+      </StripeProvider>
 
       <Switch>
         {/* {!token && <Redirect from="/" to="/home" exact />}

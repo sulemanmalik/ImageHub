@@ -13,6 +13,7 @@ app.use('/uploads', express.static('uploads')) //makes uploads folder available 
 
 //Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option
 app.use(bodyParser.json());
+app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //cors
@@ -26,19 +27,22 @@ app.use((req, res, next) => {
     }
     next()
   });
-  app.use(cors())
+app.use(cors())
 
 
 const api = require("./src/api/routes/api");
 app.use("/images", api.imageRoutes);
 app.use("/orders", api.orderRoutes);
 app.use("/user", api.userRoutes);
+app.use("/charge", api.chargeRoutes);
+
 
 app.use((req, res, next) => {
   const error = new Error("Invalid request!");
   error.status = 404;
   next(error); //forwards the error request
 });
+
 app.use((error, req, res, next) => {
   res.status(error.status || 500);
   res.json({
