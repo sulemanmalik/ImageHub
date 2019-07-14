@@ -1,62 +1,118 @@
-import React from 'react'
-import axios, { post } from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
+import FormControl from "@material-ui/core/FormControl";
+import { Input, Button, FormControlLabel } from "@material-ui/core";
 
-class FileUpload extends React.Component {
+const FileUpload = () => {
+  const [file, setFile] = useState();
 
-  constructor(props) {
-    super(props);
-    this.state ={
-      file:null
-    }
-    this.onFormSubmit = this.onFormSubmit.bind(this)
-    this.onChange = this.onChange.bind(this)
-    this.fileUpload = this.fileUpload.bind(this)
-  }
-  onFormSubmit(e){
-    e.preventDefault() // Stop form submit
-    this.fileUpload(this.state.file)
-  }
-  onChange(e) {
-    this.setState({file:e.target.files[0]})
-  }
-  fileUpload(file){
-    const url = 'http://localhost:3000/images';
+  const [uploadedFile, setUploadedFile] = useState({});
+
+  const [title, setTitle] = useState("")
+  const [price, setPrice] = useState()
+
+
+  const onChange = event => {
+    setFile(event.target.files[0]);
+  };
+
+  const onSubmit = async event => {
+    event.preventDefault();
     const formData = new FormData();
-    formData.set('title', "from react")
-    formData.set('price', "21.99")
-    formData.append('imageUrl',file)
+    formData.append("imageURL", file);
+    formData.set("title", title);
+    formData.set("price", price);
 
-    axios({
-        method: 'POST',
+    try {
+      const url = "http://localhost:3000/images";
+      const response = await axios({
+        method: "POST",
+        mode: 'no-cors',
         url: url,
         data: formData,
-        config: {headers: {
-            'content-type': 'multipart/form-data'
-        }}
-    }).then(function (response) {
-        //handle success
-        console.log(response);
-    })
-    .catch(function (response) {
-        //handle error
-        console.log(response);
-    });
+        config: {
+          headers: {
+            "content-type": "multipart/form-data"
+          }
+        }
+      });
+      const { createdImage } = response.data;
+      setUploadedFile({ createdImage });
+    } catch (err) {
+      if (err.response.status === 500) {
+        console.log(err.response.data);
+      }
+    }
+  };
 
-    // return  post(url, formData,config)
-    //  })
-  }
+  return (
+    <React.Fragment>
+      <FormControl>
+        <Input type="file" onChange={onChange} />
+        <Input type="text" placeholder="Title" onChange={e => setTitle(e.target.value)}/>
+        <Input type="text" placeholder="Price" onChange={e => setPrice(e.target.value)} />
+        <Button type="submit" onClick={onSubmit}>
+          Submit
+        </Button>
+      </FormControl>
+    </React.Fragment>
+  );
+};
 
-  render() {
-    return (
-      <form onSubmit={this.onFormSubmit}>
-        <h1>File Upload</h1>
-        <input type="file" onChange={this.onChange} />
-        <button type="submit">Upload</button>
-      </form>
-   )
-  }
-}
+// class FileUpload extends React.Component {
 
+//   constructor(props) {
+//     super(props);
+//     this.state ={
+//       file:null
+//     }
+//     this.onFormSubmit = this.onFormSubmit.bind(this)
+//     this.onChange = this.onChange.bind(this)
+//     this.fileUpload = this.fileUpload.bind(this)
+//   }
+//   onFormSubmit(e){
+//     e.preventDefault() // Stop form submit
+//     this.fileUpload(this.state.file)
+//   }
+//   onChange(e) {
+//     this.setState({file:e.target.files[0]})
+//   }
+//   fileUpload(file){
+//     const url = 'http://localhost:3000/images';
+//     const formData = new FormData();
+//     formData.set('title', "from react")
+//     formData.set('price', "21.99")
+//     formData.append('imageUrl',file)
 
+//     axios({
+//         method: 'POST',
+//         url: url,
+//         data: formData,
+//         config: {headers: {
+//             'content-type': 'multipart/form-data'
+//         }}
+//     }).then(function (response) {
+//         //handle success
+//         console.log(response);
+//     })
+//     .catch(function (response) {
+//         //handle error
+//         console.log(response);
+//     });
 
-export default FileUpload
+//     // return  post(url, formData,config)
+//     //  })
+//   }
+
+//   render() {
+//     return (
+//       <form onSubmit={this.onFormSubmit} style={{paddingBottom: 40}}>
+//         <h1>Image Upload</h1>
+//         <input type="file" onChange={this.onChange} />
+//         <button type="submit">Upload</button>
+//       </form>
+//    )
+//   }
+// }
+
+export default FileUpload;

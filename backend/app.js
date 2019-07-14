@@ -20,6 +20,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, PATCH, DELETE");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Origin", "*")
     if (req.method === "OPTIONS") {
       return res.sendStatus(200).json();
     }

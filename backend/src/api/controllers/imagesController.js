@@ -1,14 +1,18 @@
 const Image = require("../../models/Image");
+const User = require("../../models/User");
 const mongoose = require("mongoose");
+
+const Helpers = require('../../helpers/drill')
 
 const getAllImages = async (req, res, next) => {
   try {
-    const images = await Image.find().select("title price _id imageURL");
+    const images = await Image.find().populate('user', 'email').select("title price _id imageURL uploadedBy");
     const response = {
       images: images.map(img => {
         return {
           ...img._doc,
-          imageURL: img.imageURL
+          imageURL: img.imageURL,
+          // uploadedBy: Helpers.userDrill.bind(this, img._doc.uploadedBy)
         };
       }),
       count: images.length
@@ -32,26 +36,32 @@ const uploadImage = async (req, res, next) => {
   //   });
   // }
   console.log(req.file);
+
   const image = Image({
     _id: new mongoose.Types.ObjectId(),
     title: req.body.title,
     price: req.body.price,
-    imageURL: req.file.path
+    imageURL: req.file.path,
+    // uploadedBy: req.body.userId
   });
+
+  // const user = await User.findById(req.body.userId)
+
+  // user.uploadedImages.push(image)
+  // await user.save()
 
   try {
     const result = await image.save();
+
     console.log(result);
+
     res.status(201).json({
       messsage: "Image uploaded successfully!",
       createdImage: {
-        ...image._doc,
-        request: {
-          type: "GET",
-          url: "http://localhost:3000/" + result.id
-        }
+        ...image._doc
       }
     });
+
   } catch (err) {
     res.status(500).json({
       error: err
@@ -94,15 +104,11 @@ const editSingleImage = async (req, res, next) => {
     }
 
     if(updateFields.discount) {
-      console.log(updateFields.discount)
-      console.log(imageToEdit.price)
-
       const discount = 1 - Number(updateFields.discount) * 0.01
       const newPrice = imageToEdit.price * discount
-      console.log(newPrice)
       updateFields.price = newPrice
-
     }
+
     await Image.update(
       {
         _id: req.params.imageId
@@ -146,11 +152,11 @@ const applyDiscount = async (req, res, next) => {
 }
 
 const deleteSingleImage = async (req, res, next) => {
-  if (!req.authenticated) {
-    res.status(401).json({
-      message: "Unauthenticated"
-    });
-  }
+  // if (!req.authenticated) {
+  //   res.status(401).json({
+  //     message: "Unauthenticated"
+  //   });
+  // }
 
   try {
     await Image.deleteOne({ _id: req.params.imageId });

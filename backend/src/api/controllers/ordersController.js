@@ -18,17 +18,26 @@ const getAllOrders = async (req, res, next) => {
 };
 
 const createOrder = async (req, res, next) => {
+  if (!req.authenticated) {
+    res.status(401).json({
+      message: "Unauthenticated"
+    });
+  }
   try {
     const existingImage = await Image.findById({ _id: req.body.imageId });
 
     if (existingImage) {
       const order = new Order({
-        _id: mongoose.Types.ObjectId(),
-        image: req.body.imageId
+        // _id: mongoose.Types.ObjectId(),
+        image: req.body.imageId,
+        user: req.body.userId
       });
+
+      console.log('request:',req.body)
 
       const result = await order.save();
 
+      console.log(result)
       res.status(201).json({
         message: "Image order created",
         order: result
