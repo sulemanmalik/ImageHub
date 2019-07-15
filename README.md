@@ -5,7 +5,7 @@ Welcome to ImageHub, a repository for mangaing your images! ImageHub is built us
 ### Running the application 🏃🏻‍♀️
 1. Clone the application to your machine with `https://github.com/sulemanmalik/ImageHub.git`
 2. Start the backend server which will run on `localhost:3000` by navigating to the root of the project and running `yarn start`
-3. Start the backend server wich will run on `localhost:3001`by navigating to the root of the project and then to `frontend/` and running `yarn start`.
+3. Start the frontend server wich will run on `localhost:3001`by navigating to the root of the project and then to `frontend/` and running `yarn start`
 4. Navigate to `localhost:3001` in your browser and start using ImageHub
 
 ### API 🚀
@@ -96,6 +96,16 @@ Sample Call
 ```
 axios.delete('http://localhost:3000/images/:id')
 ```
+
+#### Create a new user
+#### Login a user
+#### Delete a user
+
+
+#### Get all orders
+#### Get a single order
+#### Create an order
+#### Delete an order
 
 
 
