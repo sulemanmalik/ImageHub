@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
 import FormControl from "@material-ui/core/FormControl";
-import { Input, Button, FormControlLabel } from "@material-ui/core";
+import { Input, Button, TextField } from "@material-ui/core";
 
 const FileUpload = () => {
   const [file, setFile] = useState();
 
   const [uploadedFile, setUploadedFile] = useState({});
 
-  const [title, setTitle] = useState("")
-  const [price, setPrice] = useState()
-
+  const [title, setTitle] = useState("");
+  const [price, setPrice] = useState();
 
   const onChange = event => {
     setFile(event.target.files[0]);
@@ -27,7 +26,7 @@ const FileUpload = () => {
       const url = "http://localhost:3000/images";
       const response = await axios({
         method: "POST",
-        mode: 'no-cors',
+        mode: "no-cors",
         url: url,
         data: formData,
         config: {
@@ -49,8 +48,22 @@ const FileUpload = () => {
     <React.Fragment>
       <FormControl>
         <Input type="file" onChange={onChange} />
-        <Input type="text" placeholder="Title" onChange={e => setTitle(e.target.value)}/>
-        <Input type="text" placeholder="Price" onChange={e => setPrice(e.target.value)} />
+
+        <TextField
+          id="outlined-name"
+          label="Title"
+          onChange={e => setTitle(e.target.value)}
+          margin="normal"
+          variant="outlined"
+        />
+
+        <TextField
+          id="outlined-name"
+          label="Price"
+          onChange={e => setPrice(e.target.value)}
+          margin="normal"
+          variant="outlined"
+        />
         <Button type="submit" onClick={onSubmit}>
           Submit
         </Button>
